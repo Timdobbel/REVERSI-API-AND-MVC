@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
-using ReversiRestApi.Model;
+using API.Model;
 
 
 namespace APITest
