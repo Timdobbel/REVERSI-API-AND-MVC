@@ -5,21 +5,40 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using ReversiMvcApp.Data;
 
 namespace ReversiMvcApp.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private ReversiDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ReversiDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
         {
+            ClaimsPrincipal currentUser = this.User;
+            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (currentUserID != null)
+            {
+                Speler speler = _context.Spelers.FirstOrDefault(s => s.Guid == currentUserID);
+
+                if (speler == null)
+                {
+                    speler = new Speler { Guid = currentUserID, Naam = "Onbekend" };
+                    _context.Spelers.Add(speler);
+                    _context.SaveChanges();
+                }
+            }
+
             return View();
         }
 
