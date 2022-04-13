@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCore.ReCaptcha;
 
 namespace ReversiMvcApp
 {
@@ -27,6 +28,7 @@ namespace ReversiMvcApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddReCaptcha(Configuration.GetSection("ReCaptcha"));
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
@@ -35,6 +37,7 @@ namespace ReversiMvcApp
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddSingleton(new APIService());
             services.AddControllersWithViews();
         }
 

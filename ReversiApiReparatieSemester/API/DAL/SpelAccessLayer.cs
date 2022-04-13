@@ -31,6 +31,7 @@ namespace API.DAL
         public void Delete(Spel spel)
         {
             _context.Spellen.Remove(spel);
+            _context.SaveChanges();
         }
 
         public void Save()

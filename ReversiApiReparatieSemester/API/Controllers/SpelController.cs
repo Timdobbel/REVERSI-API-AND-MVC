@@ -23,12 +23,11 @@ namespace API.Controllers
 
         // GET api/spel
         [HttpGet]
-        public ActionResult<IEnumerable<string>> GetSpelOmschrijvingenVanSpellenMetWachtendeSpeler()
+        public ActionResult<IEnumerable<Spel>> GetSpelOmschrijvingenVanSpellenMetWachtendeSpeler()
         {
-            return iRepository.GetSpellen()
-                .Where(i => i.Speler2Token == null)
-                .Select(i => i.Omschrijving)
-                .ToArray();
+            return Ok(
+                iRepository.GetSpellen().Where(i => i.Speler2Token == null)
+            );
         }
 
         // GET api/spel/{token}
@@ -71,6 +70,22 @@ namespace API.Controllers
             spel.Speler1Token = spelerToken;
             spel.Omschrijving = omschrijving;
             iRepository.AddSpel(spel);
+            return Ok(spel);
+        }
+
+
+        [HttpDelete("/api/spel/{id}")]
+        public ActionResult<Spel> DeleteSpel(string id, [FromQuery] string token)
+        {
+            if (token == null) return Unauthorized("Dit is niet jouw spel.");
+            Spel spel = iRepository.GetSpel(id);
+            if (spel == null) return NotFound();
+
+            //if ((spel.AandeBeurt == Kleur.Wit ? spel.Speler1Token : spel.Speler2Token) != token) return Unauthorized("Spel kan alleen verwijderd worden wanneer jij aan de beurt bent.");
+
+            iRepository.Delete(spel);
+            iRepository.Save();
+
             return Ok(spel);
         }
 

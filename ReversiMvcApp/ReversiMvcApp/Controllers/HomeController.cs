@@ -14,11 +14,13 @@ namespace ReversiMvcApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly APIService _apiService;
         private ReversiDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger, ReversiDbContext context)
+        public HomeController(ILogger<HomeController> logger, APIService apiService, ReversiDbContext context)
         {
             _logger = logger;
+            _apiService = apiService;
             _context = context;
         }
 
@@ -26,6 +28,8 @@ namespace ReversiMvcApp.Controllers
         {
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            List<Spel> spellen = new();
 
             if (currentUserID != null)
             {
@@ -37,9 +41,11 @@ namespace ReversiMvcApp.Controllers
                     _context.Spelers.Add(speler);
                     _context.SaveChanges();
                 }
+
+                spellen = _apiService.GetSpellenDoorSpelerToken(currentUserID);
             }
 
-            return View();
+            return View(spellen);
         }
 
         public IActionResult Privacy()

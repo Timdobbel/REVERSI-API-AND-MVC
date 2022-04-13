@@ -1,0 +1,89 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using ReversiMvcApp.Models;
+
+namespace ReversiMvcApp.Data
+{
+    public class APIService
+    {
+        private readonly HttpClient httpClient;
+
+        public APIService()
+        {
+            httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("https://localhost:44333/");
+        }
+
+        public List<Spel> GetSpelOmschrijvingenVanSpellenMetWachtendeSpeler()
+        {
+            List<Spel> resObjecten = new();
+
+            var res = httpClient.GetAsync("/api/spel/").Result;
+
+            if (res.IsSuccessStatusCode)
+            {
+                resObjecten = res.Content.ReadAsAsync<List<Spel>>().Result;
+            }
+
+            return resObjecten;
+        }
+
+        public List<Spel> GetSpellenDoorSpelerToken(string spelertoken)
+        {
+            List<Spel> resObjecten = new();
+
+            var res = httpClient.GetAsync($"/api/SpelSpeler/{spelertoken}/").Result;
+
+            if (res.IsSuccessStatusCode)
+            {
+                resObjecten = res.Content.ReadAsAsync<List<Spel>>().Result;
+            }
+
+            return resObjecten;
+        }
+
+        public Spel MaakSpel(string speler1Token, string omschrijving)
+        {
+            Spel resObject = null;
+
+            var formUrlEncodedContent = new FormUrlEncodedContent(new[]
+            {
+                new KeyValuePair<string, string>("spelerToken", speler1Token),
+                new KeyValuePair<string, string>("omschrijving", omschrijving)
+            });
+
+            HttpResponseMessage res = httpClient.PostAsync("/api/spel/", formUrlEncodedContent).Result;
+
+            if (res.IsSuccessStatusCode)
+            {
+                resObject = res.Content.ReadAsAsync<Spel>().Result;
+            }
+
+            return resObject;
+        }
+
+        public Spel GetSpel(string token)
+        {
+            Spel resObject = null;
+
+            var res = httpClient.GetAsync($"/api/spel/{token}").Result;
+
+            if (res.IsSuccessStatusCode) resObject = res.Content.ReadAsAsync<Spel>().Result;
+
+            return resObject;
+        }
+
+
+        //TODO
+        public bool Delete(string id, string spelerToken)
+        {
+            // Ophalen uit API
+            var resultaat = httpClient.DeleteAsync($"/api/spel/{id}/?token={spelerToken}").Result;
+
+            return resultaat.IsSuccessStatusCode;
+        }
+    }
+}

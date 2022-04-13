@@ -11,8 +11,11 @@ namespace API.Model
 
         public List<Spel> GetSpellen();
 
+        void Delete(Spel spel);
+
         Spel GetSpel(string spelToken);
 
+        void Save();
         // ...
     }
 }

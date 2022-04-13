@@ -13,9 +13,11 @@ namespace ReversiMvcApp
     public class SpelerController : Controller
     {
         private readonly ReversiDbContext _context;
+        private readonly APIService _apiService;
 
-        public SpelerController(ReversiDbContext context)
+        public SpelerController(APIService APIService, ReversiDbContext context)
         {
+            _apiService = APIService;
             _context = context;
         }
 
@@ -50,8 +52,6 @@ namespace ReversiMvcApp
         }
 
         // POST: Speler/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Guid,Naam,AantalGewonnen,AantalVerloren,AantalGelijk")] Speler speler)

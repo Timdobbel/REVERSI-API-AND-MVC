@@ -1,0 +1,37 @@
+﻿@model IEnumerable<ReversiMvcApp.Models.Spel>
+
+@{
+    ViewData["Title"] = "Kies een open spel om aan deel te nemen!";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Omschrijving)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Omschrijving)
+                </td>
+                <td style="width: 200px">
+                    @*<a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |*@
+                    <a class="btn btn-info" asp-action="Speel" asp-route-id="@item.Token">Naar spel</a>
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Token"><b>X</b></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
