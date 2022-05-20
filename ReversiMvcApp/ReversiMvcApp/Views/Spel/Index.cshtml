@@ -1,37 +1,52 @@
-﻿@model IEnumerable<ReversiMvcApp.Models.Spel>
+﻿@using System.Security.Claims
+@model IEnumerable<ReversiMvcApp.Models.Spel>
 
 @{
     ViewData["Title"] = "Kies een open spel om aan deel te nemen!";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    ClaimsPrincipal currentUser = this.User;
+    var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 }
 
 <h1>Index</h1>
 
-<p>
+@*<p>
     <a asp-action="Create">Create New</a>
-</p>
+</p>*@
 <table class="table">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Omschrijving)
             </th>
-            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.Speler1Token)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Speler2Token)
+            </th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Omschrijving)
-                </td>
-                <td style="width: 200px">
-                    @*<a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |*@
-                    <a class="btn btn-info" asp-action="Speel" asp-route-id="@item.Token">Naar spel</a>
-                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Token"><b>X</b></a>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Omschrijving)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Speler1Token)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Speler2Token)
+            </td>
+            <td style="width: 200px">
+                @*<a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |*@
+                @*<a class="btn btn-info" asp-action="Join" asp-route-id="@item.Token">Join spel</a>*@
+                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Token"><b>Verwijder</b></a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>

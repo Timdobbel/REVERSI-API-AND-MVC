@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Json;
@@ -252,6 +253,12 @@ namespace API.Model
 
         public bool DoeZet(int rijZet, int kolomZet)
         {
+            int temp = rijZet;
+            rijZet = kolomZet;
+            kolomZet = temp;
+
+            Debug.WriteLine($"rijZet:{rijZet} kolomZet:{kolomZet}");
+
             bool zetMogelijk = ZetMogelijk(rijZet, kolomZet);
 
             if (zetMogelijk)

@@ -50,7 +50,7 @@ namespace API
 
             services.AddControllers();
 
-            services.AddSingleton<ISpelRepository, SpelAccessLayer>();
+            services.AddTransient<ISpelRepository, SpelAccessLayer>();
 
             services.AddControllers();
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -23,9 +24,10 @@ namespace ReversiMvcApp
         }
 
         // GET: Spel
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-            return View(_service.GetSpelOmschrijvingenVanSpellenMetWachtendeSpeler());
+            return View(_service.GetAll());
         }
 
         // GET: Spel/Create
@@ -39,31 +41,48 @@ namespace ReversiMvcApp
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,Omschrijving,Token,aanDeBeurt,Speler1Token,Speler2Token")] Spel spel)
         {
+            Spel resObject = null;
             ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (ModelState.IsValid)
             {
-                Spel spelResponse = _service.MaakSpel(currentUserId, spel.Omschrijving);
+                resObject = _service.MaakSpel(currentUserId, spel.Omschrijving);
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Speel), new { id = resObject.Token });
         }
 
-        //TODO 
-        //Zie level 7-4 controleer ook of speler al een een spel verbonden is.
+        ////TODO 
+        ////Zie level 7-4 controleer ook of speler al een een spel verbonden is.
+        //public IActionResult Join(string id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    //return RedirectToAction(nameof(Play), new { id = spel.token });
+        //    return RedirectToAction(nameof(Index));
+        //}
+
         public IActionResult Join(string id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            //return RedirectToAction(nameof(Play), new { id = spel.token });
-            return RedirectToAction(nameof(Index));
+
+            ClaimsPrincipal currentUser = this.User;
+            var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            Spel spel = _service.Deelnemen(id, currentUserId);
+
+            return RedirectToAction(nameof(Speel), new { id = spel.Token });
         }
 
+
         // GET: Spel/Delete/5
-            public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -76,7 +95,6 @@ namespace ReversiMvcApp
         }
 
 
-        //GET: Spel/Details/5
         public IActionResult Speel(string id)
         {
             if (id == null) return NotFound();
@@ -87,6 +105,7 @@ namespace ReversiMvcApp
 
             return View(spel);
         }
+
 
 
         private bool SpelExists(int id)

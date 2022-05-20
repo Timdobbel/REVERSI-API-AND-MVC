@@ -1,15 +1,58 @@
 ﻿@model ReversiMvcApp.Models.Spel
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    ClaimsPrincipal currentUser = this.User;
+    var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 }
 
-<h1>Details</h1>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
+    <script src="https://unpkg.com/regenerator-runtime@0.13.1/runtime.js"></script>
+    <link rel="stylesheet" href="~/css/style.min.css">
+    <script src="~/js/vendor.js"></script>
+    <script src="~/js/templates.js"></script>
+    <script src="~/js/app.js"></script>
+    <script>
+        $(function () {
+            Game.init('@Model.Token', '@currentUserId');
+        });
+
+    </script>
+}
+
+<h1>Spel: @Model.Omschrijving</h1>
+
+<div class="apiData"></div>
+<div class="beurt">
+    @if (@Model.aanDeBeurt == 0)
+    {
+        @:Wachten
+    }
+    else
+    {
+        @if (@Model.beurt == currentUserId)
+        {
+            @:Jouw
+        }
+        else
+        {
+            @:Hun
+        }
+    }
+</div>
+<div class="board">
+</div>
+@*<canvas id="myChart" width="400" height="400"></canvas>*@
 
 <div>
-    <h4>Spel</h4>
-    <hr />
+    <br/>  
+    <h4>Details</h4>
+    <hr/>
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Omschrijving)
@@ -46,5 +89,5 @@
 <div>
 
     @* <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a>*@
-    <a class="btn btn-info" asp-action="Index">Back to List</a>
+    @*<a class="btn btn-info" asp-action="Index">Back to List</a>*@
 </div>

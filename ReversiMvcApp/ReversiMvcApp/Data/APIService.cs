@@ -76,6 +76,18 @@ namespace ReversiMvcApp.Data
             return resObject;
         }
 
+        public List<Spel> GetAll()
+        {
+            List<Spel> resObject = new();
+            // Ophalen uit API
+            var res = httpClient.GetAsync($"/api/spellen").Result;
+            if (res.IsSuccessStatusCode)
+            {
+                resObject = res.Content.ReadAsAsync<List<Spel>>().Result;
+            }
+
+            return resObject;
+        }
 
         //TODO
         public bool Delete(string id, string spelerToken)
@@ -84,6 +96,21 @@ namespace ReversiMvcApp.Data
             var resultaat = httpClient.DeleteAsync($"/api/spel/{id}/?token={spelerToken}").Result;
 
             return resultaat.IsSuccessStatusCode;
+        }
+
+        public Spel Deelnemen(string id, string spelerToken)
+        {
+            Spel resObject = null;
+
+            HttpResponseMessage res = httpClient.PutAsync(
+                $"/api/spel/{id}/join/?token={spelerToken}", new StringContent("")
+            ).Result;
+            if (res.IsSuccessStatusCode)
+            {
+                resObject = res.Content.ReadAsAsync<Spel>().Result;
+            }
+
+            return resObject;
         }
     }
 }

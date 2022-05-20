@@ -11,6 +11,9 @@
 
 <h1>Je bent ingelogd!</h1>
 <p class="text-black-50">Hier zie je al jouw openstaande en gespeelde spellen. Ga naar "spellen" om deel te nemen aan een nieuw spel of om een spel aan te maken.</p>
+<p>
+    <a asp-controller="Spel" asp-action="Create">Nieuw Spel</a>
+</p>
 <table class="table">
     <thead>
         <tr>
@@ -20,34 +23,40 @@
             <th>
                 Beurt
             </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Omschrijving)
-                </td>
+         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Omschrijving)
+            </td>
 
-                <td>
-                    @if (item.aanDeBeurt == 0)
+            <td>
+                @if (item.aanDeBeurt == 0)
+                {
+                    @:Wachten
+                }
+                else
+                {
+                    @if (item.beurt == currentUserId)
                     {
-                        @:Wachten
+                        @:Jouw
                     }
                     else
                     {
-                        @if (item.beurt == currentUserId)
-                        {
-                            @:Jouw
-                        }
-                        else
-                        {
-                            @:Hun
-                        }
+                        @:Hun
                     }
-                </td>
-            </tr>
+                }
+            </td>
+             <td style="width: 200px">
+                 @*<a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |*@
+                 <a class="btn btn-info" asp-controller="Spel" asp-action="Join" asp-route-id="@item.Token">Join spel</a>
+             </td>
+        </tr>
+        
         }
     </tbody>
 </table>

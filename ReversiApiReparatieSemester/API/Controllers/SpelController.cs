@@ -50,6 +50,14 @@ namespace API.Controllers
             );
         }
 
+        [HttpGet("/api/spellen")]
+        public ActionResult<IEnumerable<Spel>> GetSpellen()
+        {
+            return Ok(
+                iRepository.GetSpellen()
+            );
+        }
+
         // GET api/spel/beurt/{token}   
         [HttpGet]
         [Route("beurt/{token}")]
@@ -70,6 +78,41 @@ namespace API.Controllers
             spel.Speler1Token = spelerToken;
             spel.Omschrijving = omschrijving;
             iRepository.AddSpel(spel);
+            return Ok(spel);
+        }
+
+        [HttpPut("/api/spel/{id}/join")]
+        public ActionResult<Spel> JoinSpel(string id, [FromQuery] string token)
+        {
+            if (token == null) return Unauthorized();
+
+            Spel spel = iRepository.GetSpel(id);
+            if (spel == null) return NotFound();
+
+            //if (spel.Status != Status.Wachtend) return BadRequest("Dit spel is al bezig");
+            if (spel.Speler2Token != null) return BadRequest("Geen ruimte in dit spel");
+            spel.Speler2Token = token;
+            spel.AandeBeurt = Kleur.Zwart;
+
+            iRepository.Save();
+
+            return Ok(spel);
+        }
+
+        [HttpPut("/api/spel/{id}/zet")]
+        public ActionResult<Spel> DoeEenZet(string id, [FromQuery] string token, [FromQuery] int rij, [FromQuery] int kolom)
+        {
+            if (token == null) return Unauthorized();
+
+            Spel spel = iRepository.GetSpel(id);
+            if (spel == null) return NotFound();
+            //if (spel.Status != Status.Bezig) return BadRequest("Dit potje is niet bezig");
+
+            if ((spel.AandeBeurt == Kleur.Wit ? spel.Speler1Token : spel.Speler2Token) != token) return Unauthorized("Niet jou beurt");
+            if (!spel.DoeZet(rij, kolom)) return BadRequest("Geen valide zet");
+
+            iRepository.Save();
+
             return Ok(spel);
         }
 

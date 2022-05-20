@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using ReversiMvcApp.Data;
 
 namespace ReversiMvcApp.Controllers
@@ -24,10 +25,12 @@ namespace ReversiMvcApp.Controllers
             _context = context;
         }
 
+        [Authorize]
         public IActionResult Index()
         {
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var currentUserEmail = currentUser.FindFirst(ClaimTypes.Email)?.Value;
 
             List<Spel> spellen = new();
 
@@ -42,10 +45,17 @@ namespace ReversiMvcApp.Controllers
                     _context.SaveChanges();
                 }
 
-                spellen = _apiService.GetSpellenDoorSpelerToken(currentUserID);
+                //Changed this so that it fetches open games
+                //spellen = _apiService.GetSpellenDoorSpelerToken(currentUserID);
+                //spellen = _apiService.GetSpelOmschrijvingenVanSpellenMetWachtendeSpeler();
+
+                spellen = _apiService.GetAll();
+                Spel bestaandSpel = spellen.FirstOrDefault(spel => spel.Speler1Token == currentUserID || spel.Speler2Token == currentUserID);
+
+                if (bestaandSpel != null) return RedirectToAction("Speel", "Spel", new { id = bestaandSpel.Token });
             }
 
-            return View(spellen);
+            return View(_apiService.GetSpelOmschrijvingenVanSpellenMetWachtendeSpeler());
         }
 
         public IActionResult Privacy()

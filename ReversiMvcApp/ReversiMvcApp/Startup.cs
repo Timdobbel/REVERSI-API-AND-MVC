@@ -35,7 +35,7 @@ namespace ReversiMvcApp
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDbContext<ReversiDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ReversiDB")), ServiceLifetime.Singleton);
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddSingleton(new APIService());
             services.AddControllersWithViews();
