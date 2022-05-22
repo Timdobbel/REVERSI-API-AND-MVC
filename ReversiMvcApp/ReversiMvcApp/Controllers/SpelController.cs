@@ -31,6 +31,7 @@ namespace ReversiMvcApp
         }
 
         // GET: Spel/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -39,6 +40,7 @@ namespace ReversiMvcApp
         // POST: Spel/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("ID,Omschrijving,Token,aanDeBeurt,Speler1Token,Speler2Token")] Spel spel)
         {
             Spel resObject = null;
@@ -53,18 +55,7 @@ namespace ReversiMvcApp
             return RedirectToAction(nameof(Speel), new { id = resObject.Token });
         }
 
-        ////TODO 
-        ////Zie level 7-4 controleer ook of speler al een een spel verbonden is.
-        //public IActionResult Join(string id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    //return RedirectToAction(nameof(Play), new { id = spel.token });
-        //    return RedirectToAction(nameof(Index));
-        //}
-
+        [Authorize]
         public IActionResult Join(string id)
         {
             if (id == null)
@@ -82,6 +73,7 @@ namespace ReversiMvcApp
 
 
         // GET: Spel/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
             ClaimsPrincipal currentUser = this.User;
@@ -94,8 +86,22 @@ namespace ReversiMvcApp
             return NotFound();
         }
 
-
+        [Authorize]
         public IActionResult Speel(string id)
+        {
+            if (id == null) return NotFound();
+
+            Spel spel = _service.GetSpel(id);
+
+            if (spel == null) return RedirectToAction("Index", "Home");
+
+            return View(spel);
+        }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Finish(string id)
         {
             if (id == null) return NotFound();
 
@@ -103,10 +109,76 @@ namespace ReversiMvcApp
 
             if (spel == null) return NotFound();
 
-            return View(spel);
+
+            ClaimsPrincipal currentUser = this.User;
+            var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            Speler speler1 = _context.Spelers.FirstOrDefault(s => s.Guid == spel.Speler1Token);
+            if (speler1 == null) return NotFound();
+
+            Speler speler2 = _context.Spelers.FirstOrDefault(s => s.Guid == spel.Speler2Token);
+            if (speler2 == null) return NotFound();
+
+            if (currentUserId != spel.beurt) return Unauthorized();
+
+            int scoreP1 = spel.bord.Count(v => v.Value == 1);
+            int scoreP2 = spel.bord.Count(v => v.Value == 2);
+
+            if (scoreP1 > scoreP2)
+            {
+                speler1.AantalGewonnen++;
+                speler2.AantalVerloren++;
+            }
+            else if (scoreP2 > scoreP1)
+            {
+                speler2.AantalGewonnen++;
+                speler1.AantalVerloren++;
+            }
+            else
+            {
+                speler1.AantalGelijk++;
+                speler2.AantalGelijk++;
+            }
+
+            await _context.SaveChangesAsync();
+
+            if (!_service.Delete(id, currentUserId)) return BadRequest();
+
+            return Ok();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Verlaten(string id, [FromQuery] string spelerToken)
+        {
+            if (id == null || spelerToken == null) return NotFound();
 
+            Spel spel = _service.GetSpel(id);
+
+            if (spel == null) return NotFound();
+
+            Speler speler1 = _context.Spelers.FirstOrDefault(s => s.Guid == spel.Speler1Token);
+            if (speler1 == null) return NotFound();
+
+            Speler speler2 = _context.Spelers.FirstOrDefault(s => s.Guid == spel.Speler2Token);
+            if (speler2 == null) return NotFound();
+
+            if (spelerToken == speler1.Guid)
+            {
+                speler1.AantalVerloren++;
+                speler2.AantalGewonnen++;
+            }
+            else if (spelerToken == speler2.Guid)
+            {
+                speler1.AantalGewonnen++;
+                speler2.AantalVerloren++;
+            }
+
+            await _context.SaveChangesAsync();
+
+            if (!_service.Delete(id, spelerToken)) return BadRequest();
+
+            return Ok();
+        }
 
         private bool SpelExists(int id)
         {

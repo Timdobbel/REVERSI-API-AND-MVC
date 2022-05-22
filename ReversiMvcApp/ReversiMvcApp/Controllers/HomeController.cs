@@ -40,14 +40,10 @@ namespace ReversiMvcApp.Controllers
 
                 if (speler == null)
                 {
-                    speler = new Speler { Guid = currentUserID, Naam = "Onbekend" };
+                    speler = new Speler { Guid = currentUserID, Naam = currentUserEmail };
                     _context.Spelers.Add(speler);
                     _context.SaveChanges();
                 }
-
-                //Changed this so that it fetches open games
-                //spellen = _apiService.GetSpellenDoorSpelerToken(currentUserID);
-                //spellen = _apiService.GetSpelOmschrijvingenVanSpellenMetWachtendeSpeler();
 
                 spellen = _apiService.GetAll();
                 Spel bestaandSpel = spellen.FirstOrDefault(spel => spel.Speler1Token == currentUserID || spel.Speler2Token == currentUserID);

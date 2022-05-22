@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using API.Model;
 
@@ -19,7 +20,6 @@ namespace API.Controllers
         {
             iRepository = repository;
         }
-
 
         // GET api/spel
         [HttpGet]
@@ -40,6 +40,36 @@ namespace API.Controllers
                 return Ok(spel);
             else
                 return NotFound();
+        }
+
+        [HttpGet("/api/Afgelopen/{id}")]
+        public ActionResult<bool> Afgelopen(string id)
+        {
+            Spel spel = iRepository.GetSpel(id);
+
+            //If Geen kleur return false
+            if (spel.AandeBeurt == Kleur.Geen) return Ok(false);
+
+            bool notAbleToMakeMove = spel.Afgelopen();
+
+            //If white unable to make move give turn to black
+            if (spel.AandeBeurt == Kleur.Wit)
+            {
+                if (notAbleToMakeMove)
+                {
+                    spel.AandeBeurt = Kleur.Zwart;
+                    iRepository.Save();
+                }
+                return Ok(false);
+            }
+
+            //Check if black's turn if unable to play 
+            if (spel.AandeBeurt == Kleur.Zwart)
+            {
+                if (notAbleToMakeMove) return Ok(true);
+            }
+
+            return Ok(false);
         }
 
         [HttpGet("/api/SpelSpeler/{id}")]
