@@ -18,11 +18,10 @@ namespace ReversiMvcApp.Models
         public int AantalGelijk { get; set; }
         public string Role { get; set; }
 
-
         [NotMapped]
         public List<SelectListItem> Roles { get; } = new List<SelectListItem>()
         {
-            new SelectListItem { Value = "Speler", Text = "Speler" },
+            new SelectListItem { Value = "Player", Text = "Speler" },
             new SelectListItem { Value = "Beheerder", Text = "Beheerder" },
             new SelectListItem { Value = "Mediator", Text = "Mediator" },
         };

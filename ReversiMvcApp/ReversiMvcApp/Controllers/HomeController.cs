@@ -20,12 +20,12 @@ namespace ReversiMvcApp.Controllers
         private readonly UserManager<IdentityUser> _roleManager;
         private ReversiDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger, APIService apiService, ReversiDbContext context, UserManager<IdentityUser> userManager)
+        public HomeController(ILogger<HomeController> logger, APIService apiService, ReversiDbContext context, UserManager<IdentityUser> roleManager)
         {
             _logger = logger;
             _apiService = apiService;
             _context = context;
-            _roleManager = userManager;
+            _roleManager = roleManager;
         }
 
         [Authorize]
@@ -34,6 +34,7 @@ namespace ReversiMvcApp.Controllers
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var currentUserEmail = currentUser.FindFirst(ClaimTypes.Email)?.Value;
+            var role = currentUser.FindFirstValue(ClaimTypes.Role);
 
             List<Spel> spellen = new();
 
@@ -43,7 +44,13 @@ namespace ReversiMvcApp.Controllers
 
                 if (speler == null)
                 {
-                    speler = new Speler { Guid = currentUserID, Naam = currentUserEmail };
+                    speler = new Speler
+                    {
+                        Guid = currentUserID,
+                        Naam = currentUserEmail,
+                        Role = role,
+                    };
+
                     _context.Spelers.Add(speler);
                     _context.SaveChanges();
                 }

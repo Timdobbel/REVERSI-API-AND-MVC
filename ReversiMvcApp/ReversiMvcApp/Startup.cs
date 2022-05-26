@@ -43,7 +43,7 @@ namespace ReversiMvcApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleManager)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
         {
             if (env.IsDevelopment())
             {
@@ -60,6 +60,8 @@ namespace ReversiMvcApp
             MakeRole("Player", roleManager).GetAwaiter().GetResult();
             MakeRole("Beheerder", roleManager).GetAwaiter().GetResult();
             MakeRole("Mediator", roleManager).GetAwaiter().GetResult();
+
+            MakeBeheerder(userManager).GetAwaiter().GetResult();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -85,6 +87,20 @@ namespace ReversiMvcApp
                 return;
             }
             await roleManager.CreateAsync(new IdentityRole(roleName));
+        }
+
+        private async Task MakeBeheerder(UserManager<IdentityUser> userManager)
+        {
+            var user = await userManager.FindByEmailAsync("beheerder@hotmail.com");
+
+            if (user != null)
+            {
+                return;
+            }
+
+            var beheerder = new IdentityUser { UserName = "beheerder@hotmail.com", Email = "beheerder@hotmail.com" };
+            await userManager.CreateAsync(beheerder, "Test123!");
+            await userManager.AddToRoleAsync(beheerder, "Beheerder");
         }
 
     }
