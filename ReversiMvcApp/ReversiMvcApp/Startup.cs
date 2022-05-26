@@ -36,13 +36,14 @@ namespace ReversiMvcApp
             services.AddDbContext<ReversiDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ReversiDB")), ServiceLifetime.Singleton);
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddSingleton(new APIService());
             services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleManager)
         {
             if (env.IsDevelopment())
             {
@@ -55,6 +56,11 @@ namespace ReversiMvcApp
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            MakeRole("Player", roleManager).GetAwaiter().GetResult();
+            MakeRole("Beheerder", roleManager).GetAwaiter().GetResult();
+            MakeRole("Mediator", roleManager).GetAwaiter().GetResult();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -71,5 +77,15 @@ namespace ReversiMvcApp
                 endpoints.MapRazorPages();
             });
         }
+
+        private async Task MakeRole(string roleName, RoleManager<IdentityRole> roleManager)
+        {
+            if (await roleManager.RoleExistsAsync(roleName))
+            {
+                return;
+            }
+            await roleManager.CreateAsync(new IdentityRole(roleName));
+        }
+
     }
 }

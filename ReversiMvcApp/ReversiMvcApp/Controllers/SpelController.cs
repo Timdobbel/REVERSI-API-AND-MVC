@@ -157,10 +157,14 @@ namespace ReversiMvcApp
             if (spel == null) return NotFound();
 
             Speler speler1 = _context.Spelers.FirstOrDefault(s => s.Guid == spel.Speler1Token);
-            if (speler1 == null) return NotFound();
-
             Speler speler2 = _context.Spelers.FirstOrDefault(s => s.Guid == spel.Speler2Token);
-            if (speler2 == null) return NotFound();
+
+            //No second player. Delete game without updating score.
+            if (speler2 == null)
+            {
+                if (!_service.Delete(id, spelerToken)) return BadRequest();
+                return Ok();
+            }
 
             if (spelerToken == speler1.Guid)
             {

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using ReversiMvcApp.Data;
 
 namespace ReversiMvcApp.Controllers
@@ -16,13 +17,15 @@ namespace ReversiMvcApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly APIService _apiService;
+        private readonly UserManager<IdentityUser> _roleManager;
         private ReversiDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger, APIService apiService, ReversiDbContext context)
+        public HomeController(ILogger<HomeController> logger, APIService apiService, ReversiDbContext context, UserManager<IdentityUser> userManager)
         {
             _logger = logger;
             _apiService = apiService;
             _context = context;
+            _roleManager = userManager;
         }
 
         [Authorize]
