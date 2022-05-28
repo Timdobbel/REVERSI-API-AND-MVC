@@ -1,1 +1,592 @@
-"use strict";function _createForOfIteratorHelper(e,t){var n,r="undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(!r){if(Array.isArray(e)||(r=_unsupportedIterableToArray(e))||t&&e&&"number"==typeof e.length)return r&&(e=r),n=0,{s:t=function(){},n:function(){return n>=e.length?{done:!0}:{done:!1,value:e[n++]}},e:function(e){throw e},f:t};throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var a,o=!0,i=!1;return{s:function(){r=r.call(e)},n:function(){var e=r.next();return o=e.done,e},e:function(e){i=!0,a=e},f:function(){try{o||null==r.return||r.return()}finally{if(i)throw a}}}}function _unsupportedIterableToArray(e,t){if(e){if("string"==typeof e)return _arrayLikeToArray(e,t);var n=Object.prototype.toString.call(e).slice(8,-1);return"Map"===(n="Object"===n&&e.constructor?e.constructor.name:n)||"Set"===n?Array.from(e):"Arguments"===n||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)?_arrayLikeToArray(e,t):void 0}}function _arrayLikeToArray(e,t){(null==t||t>e.length)&&(t=e.length);for(var n=0,r=new Array(t);n<t;n++)r[n]=e[n];return r}function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _defineProperties(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}function _createClass(e,t,n){return t&&_defineProperties(e.prototype,t),n&&_defineProperties(e,n),Object.defineProperty(e,"prototype",{writable:!1}),e}var Game=function(){var c,l={gameState:null,prev:null,gameId:"02af7930-6faf-45a8-bf90-961cc5e40beb",playerId:"",mvcURL:""};function n(){return(1===l.gameState.aanDeBeurt?l.gameState.speler1Token:l.gameState.speler2Token)===l.playerId}function r(){var i=null===l.gameState;Game.Model.getGameState(l.gameId).then(function(e){if(Game.Model.getAfgelopen(l.gameId).then(function(e){e&&(f(),clearInterval(c))}).catch(function(e){return console.error(e)}),l.gameState=e,u(),i)Game.Reversi.renderBoard(l.gameState.bord);else{for(var t=!1,n=0;n<8;n++)for(var r=0;r<8;r++){var a=l.prev.bord[r][n],o=l.gameState.bord[r][n];a!==o&&(t=!0,Game.Reversi.showFiche(n,r,o))}t&&(s(),Game.Stats.addData(l.gameState))}l.prev=l.gameState}).catch(function(e){return console.error(e)})}var u=function(){var e=document.getElementById("beurt"),t=n();t?($(e).removeClass("beurt--jouw"),$(e).addClass("beurt--mijn")):($(e).removeClass("beurt--mijn"),$(e).addClass("beurt--jouw")),e.innerText=t?"Je bent aan de beurt":"De ander is aan de beurt"},f=function(){var e=l.gameState.bord.map(function(e){return e.filter(function(e){return 1===e}).length}).reduce(function(e,t){return e+t}),t=l.gameState.bord.map(function(e){return e.filter(function(e){return 2===e}).length}).reduce(function(e,t){return e+t}),n=l.gameState.speler1Token===l.playerId,r=document.getElementById("beurt"),r=(r.innerHTML=t<e?n?"🔥🎊🔥🙌🎈🍻 Gewonnen! 🔥🎊🔥🙌🎈🍻":"Je hebt verloren 😢😔":e<t?n?"Je hebt verloren 😢😔":"🔥🎊🔥🙌🎈🍻 Gewonnen! 🔥🎊🔥🙌🎈🍻":"Gelijk spel",document.getElementById("leaveButton"));r.innerText="Spel Verlaten ✅🏁",r.removeAttribute("onclick"),r.onclick=function(e){$.get("".concat(l.mvcURL,"/Spel/Finish/").concat(l.gameId)).then(function(e){return window.location="/"})}},s=function(){var e=l.gameState.bord.map(function(e){return e.filter(function(e){return 1===e}).length}).reduce(function(e,t){return e+t}),t=l.gameState.bord.map(function(e){return e.filter(function(e){return 2===e}).length}).reduce(function(e,t){return e+t}),n=document.getElementById("score");"2 - 2"!=="".concat(e," - ").concat(t)&&(n.innerText="".concat(e," - ").concat(t))};return{init:function(e,t,n){l.gameId=e,l.playerId=t,l.mvcURL=n,Game.Data.init("".concat(l.mvcURL),"production"),Game.Model.init(),Game.Template.init(),Game.API.init(),Game.Stats.init(),Game.Reversi.init(),document.getElementById("leaveButton").onclick=function(e){1==confirm("Weet je zeker dat je het spel wilt verlaten?")&&$.get("".concat(l.mvcURL,"/Spel/Verlaten/").concat(l.gameId,"?spelerToken=").concat(l.playerId)).then(function(e){return window.location="/"})},r(),c=setInterval(r,2e3)},placeFiche:function(e,t){if(document.getElementById("beurt").innerText="Laden...",n())return Game.Data.put("/api/spel/".concat(l.gameId,"/zet?token=").concat(l.playerId,"&kolom=").concat(e,"&rij=").concat(t)),""}}}(),FeedbackWidget=function(){function t(e){_classCallCheck(this,t),this._elementId=e}return _createClass(t,[{key:"elementId",get:function(){return this._elementId}},{key:"show",value:function(e,t){var n=$("#"+this._elementId),r=$("#alert-message");$(n).fadeIn("slow"),r.text(e),r.addClass("yeet"),"danger"===t?($(n).addClass("feedback-widget--state-danger"),$(n).removeClass("feedback-widget--state-succes")):"success"===t&&($(n).addClass("feedback-widget--state-succes"),$(n).removeClass("feedback-widget--state-danger")),this.log({message:e,type:t})}},{key:"hide",value:function(){var e=document.getElementById(this._elementId);$(e).fadeOut("slow")}},{key:"log",value:function(e){var t=JSON.parse(localStorage.getItem("feedback_widget"));null==t?localStorage.setItem("feedback_widget",JSON.stringify([e])):(t.push(e),10<t.length&&t.shift(),this.removelog(),localStorage.setItem("feedback_widget",JSON.stringify(t)))}},{key:"removelog",value:function(){localStorage.removeItem("feedback_widget")}},{key:"history",value:function(){var e=(null!=(e=JSON.parse(localStorage.getItem("feedback_widget")))?e:[]).map(function(e){return"".concat(e.type," - ").concat(e.message)}).join("\n");console.log(e)}}]),t}();Game.API={init:function(){console.log("from game.api.init!")}},Game.Data=function(){function t(t){var n=r.mock.find(function(e){return e.url===t}).data;return new Promise(function(e,t){e(n)})}var n={environment:"development"},r={url:"",apiKey:"<plaats hier je apikey>",mock:[{url:"/api/spel/beurt",data:0}]};return{init:function(e,t){if(r.url=e,"production"!==t&&"development"!==t)throw new Error("environment must be production or development");n.environment=t,console.log(n.environment+" environment"),console.log("from game.data.init!")},get:function(e){return"development"===n.environment?t(e):"production"===n.environment?$.get(r.url+e).then(function(e){return e}).catch(function(e){console.log(e.message)}):void 0},put:function(e){return"development"===n.environment?t(e):new Promise(function(t){$.ajax({url:r.url+e,type:"PUT",success:function(e){t(e)}})})}}}(),Game.Model={init:function(){console.log("from game.model.init!")},getGameState:function(e){return new Promise(function(u,f){console.log("getting game for: speltoken: ".concat(e)),Game.Data.get("/Spel/GetSpel/".concat(null!=e?e:"")).then(function(e){for(var t,n=e.aanDeBeurt,r=(console.log(e),e),a=r.bord,o=[],i=0;i<8;i++)o.push([0,0,0,0,0,0,0,0]);for(t in a){var c=a[t],l=t.split(",");o[l[0]][l[1]]=c}r.bord=o,0===n||1===n||2===n?u(e):(console.error("Game.Model.getGameState: Error fetching gamestate"),f("Invalid gamestate or failed request."))}).catch(function(e){return f(e)})})},getAfgelopen:function(e){return new Promise(function(t,n){Game.Data.get("/Spel/Afgelopen/".concat(null!=e?e:"")).then(function(e){t(e)}).catch(function(e){return n(e)})})}},Game.Reversi=function(){var r="board.body";return{init:function(){console.log("from game.reversi.init!")},renderBoard:function(e){document.querySelector(".board").innerHTML=Game.Template.parseTemplate(r,{board:e});for(var t=function(r){for(var e=0;e<8;e++)!function(t){var n=document.querySelector(".board__row__element--y-".concat(r,".board__row__element--x-").concat(t));n.addEventListener("click",function(e){0<n.children.length||Game.placeFiche(t,r)})}(e)},n=0;n<8;n++)t(n)},showFiche:function(e,t,n){t=document.querySelector(".board__row__element--y-".concat(t,".board__row__element--x-").concat(e)),(e=document.createElement("div")).classList.add("fiche"),e.classList.add("fiche--".concat(n)),t.innerHTML="",t.append(e)}}}(),Game.Stats=function(){var n,r=[],a=[];function o(){var e,t=$("#stats");null!=(e=n)&&e.destroy(),n=new Chart(t,{type:"line",data:{labels:r.map(function(e,t){return t+1}),datasets:[{label:"Speler 1",data:r,fill:!1,borderColor:"rgb(179, 91, 91)",tension:.1},{label:"Speler 2",data:a,fill:!1,borderColor:"rgb(91, 179, 94)",tension:.1}]},options:{scales:{y:{beginAtZero:!0}}}})}return{init:function(){console.log("from game.stats.init!"),o()},addData:function(e){var t=e.bord.map(function(e){return e.filter(function(e){return 1===e}).length}).reduce(function(e,t){return e+t}),e=e.bord.map(function(e){return e.filter(function(e){return 2===e}).length}).reduce(function(e,t){return e+t});r.push(t),a.push(e),o()}}}(),Game.Template=function(){function n(e){var t,n=spa_templates.templates,r=_createForOfIteratorHelper(e.split("."));try{for(r.s();!(t=r.n()).done;)n=n[t.value]}catch(e){r.e(e)}finally{r.f()}return n}return{init:function(){Handlebars.registerHelper("ifeq",function(e,t,n){return e===t?n.fn(this):n.inverse(this)}),Handlebars.registerHelper("ifnoteq",function(e,t,n){return e!==t?n.fn(this):n.inverse(this)})},getTemplate:n,parseTemplate:function(e,t){return n(e)(t)}}}();
+"use strict";
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var Game = function (url) {
+  var stateMap = {
+    gameState: null,
+    prev: null,
+    gameId: "02af7930-6faf-45a8-bf90-961cc5e40beb",
+    playerId: "",
+    mvcURL: ""
+  };
+  var polling;
+  var _configMap = {};
+
+  var privateInit = function privateInit(gameToken, playerId, mvcURL) {
+    stateMap.gameId = gameToken;
+    stateMap.playerId = playerId;
+    stateMap.mvcURL = mvcURL;
+    Game.Data.init("".concat(stateMap.mvcURL), "production");
+    Game.Model.init();
+    Game.Template.init();
+    Game.API.init();
+    Game.Stats.init();
+    Game.Reversi.init();
+    var leaveButton = document.getElementById('leaveButton');
+
+    leaveButton.onclick = function (event) {
+      if (confirm('Weet je zeker dat je het spel wilt verlaten?') == true) {
+        $.get("".concat(stateMap.mvcURL, "/Spel/Verlaten/").concat(stateMap.gameId, "?spelerToken=").concat(stateMap.playerId)).then(function (r) {
+          return window.location = "/";
+        });
+      }
+    };
+
+    _getGameState();
+
+    polling = setInterval(_getGameState, 2000);
+  };
+
+  var placeFiche = function placeFiche(x, y) {
+    // console.log(`Placee fiche at x:${x}, y:${y}`);
+    var e = document.getElementById('beurt');
+    e.innerText = 'Laden...'; // console.log('aan de beurt: ' + aanDeBeurt());
+
+    if (!aanDeBeurt()) return;
+    Game.Data.put("/api/spel/".concat(stateMap.gameId, "/zet?token=").concat(stateMap.playerId, "&kolom=").concat(x, "&rij=").concat(y));
+    return '';
+  };
+
+  function aanDeBeurt() {
+    var token = stateMap.gameState.aanDeBeurt === 1 ? stateMap.gameState.speler1Token : stateMap.gameState.speler2Token;
+    return token === stateMap.playerId;
+  }
+
+  var updateBeurtText = function updateBeurtText() {
+    var e = document.getElementById('beurt');
+    var beurt = aanDeBeurt();
+
+    if (beurt) {
+      $(e).removeClass('beurt--jouw');
+      $(e).addClass('beurt--mijn');
+    } else {
+      $(e).removeClass('beurt--mijn');
+      $(e).addClass('beurt--jouw');
+    }
+
+    e.innerText = beurt ? 'Je bent aan de beurt' : 'De ander is aan de beurt';
+  };
+
+  var updateWonOrLost = function updateWonOrLost() {
+    var p1 = stateMap.gameState.bord.map(function (v) {
+      return v.filter(function (l) {
+        return l === 1;
+      }).length;
+    }).reduce(function (i1, i2) {
+      return i1 + i2;
+    });
+    var p2 = stateMap.gameState.bord.map(function (v) {
+      return v.filter(function (l) {
+        return l === 2;
+      }).length;
+    }).reduce(function (i1, i2) {
+      return i1 + i2;
+    });
+    var isP1 = stateMap.gameState.speler1Token === stateMap.playerId;
+    var e = document.getElementById('beurt');
+
+    if (p1 > p2) {
+      e.innerHTML = isP1 ? "🔥🎊🔥🙌🎈🍻 Gewonnen! 🔥🎊🔥🙌🎈🍻" : "Je hebt verloren 😢😔";
+    } else if (p2 > p1) {
+      e.innerHTML = isP1 ? "Je hebt verloren 😢😔" : "🔥🎊🔥🙌🎈🍻 Gewonnen! 🔥🎊🔥🙌🎈🍻";
+    } else {
+      e.innerHTML = "Gelijk spel";
+    }
+
+    var leaveButton = document.getElementById('leaveButton');
+    leaveButton.innerText = "Spel Verlaten ✅🏁";
+    leaveButton.removeAttribute("onclick");
+
+    leaveButton.onclick = function (event) {
+      $.get("".concat(stateMap.mvcURL, "/Spel/Finish/").concat(stateMap.gameId)).then(function (r) {
+        return window.location = "/";
+      });
+    };
+  };
+
+  var updateScore = function updateScore() {
+    var p1 = stateMap.gameState.bord.map(function (v) {
+      return v.filter(function (l) {
+        return l === 1;
+      }).length;
+    }).reduce(function (i1, i2) {
+      return i1 + i2;
+    });
+    var p2 = stateMap.gameState.bord.map(function (v) {
+      return v.filter(function (l) {
+        return l === 2;
+      }).length;
+    }).reduce(function (i1, i2) {
+      return i1 + i2;
+    });
+    var e = document.getElementById("score");
+
+    if ("".concat(p1, " - ").concat(p2) !== "2 - 2") {
+      e.innerText = "".concat(p1, " - ").concat(p2);
+    }
+  };
+
+  var _getGameState = function _getGameState() {
+    var first = stateMap.gameState === null;
+    Game.Model.getGameState(stateMap.gameId).then(function (response) {
+      Game.Model.getAfgelopen(stateMap.gameId).then(function (afgelopen) {
+        // console.log('afgelopen: ' + afgelopen);
+        if (afgelopen) {
+          updateWonOrLost();
+          clearInterval(polling);
+        }
+      })["catch"](function (err) {
+        return console.error(err);
+      });
+      stateMap.gameState = response;
+      updateBeurtText();
+
+      if (first) {
+        Game.Reversi.renderBoard(stateMap.gameState.bord);
+      } else {
+        var changed = false;
+
+        for (var x = 0; x < 8; x++) {
+          for (var y = 0; y < 8; y++) {
+            var prev = stateMap.prev.bord[y][x];
+            var now = stateMap.gameState.bord[y][x];
+
+            if (prev !== now) {
+              changed = true;
+              Game.Reversi.showFiche(x, y, now);
+            }
+          }
+        }
+
+        if (changed) {
+          updateScore();
+          Game.Stats.addData(stateMap.gameState);
+        }
+      }
+
+      stateMap.prev = stateMap.gameState;
+    })["catch"](function (err) {
+      return console.error(err);
+    });
+  };
+
+  return {
+    init: privateInit,
+    placeFiche: placeFiche
+  };
+}('/api/url');
+
+var FeedbackWidget = /*#__PURE__*/function () {
+  function FeedbackWidget(elementId) {
+    _classCallCheck(this, FeedbackWidget);
+
+    this._elementId = elementId;
+  }
+
+  _createClass(FeedbackWidget, [{
+    key: "elementId",
+    get: function get() {
+      //getter, set keyword voor setter methode
+      return this._elementId;
+    }
+  }, {
+    key: "show",
+    value: function show(message, type) {
+      var x = $("#" + this._elementId);
+      var messageElement = $("#alert-message");
+      $(x).fadeIn("slow");
+      messageElement.text(message);
+      messageElement.addClass('yeet');
+
+      if (type === "danger") {
+        $(x).addClass('feedback-widget--state-danger');
+        $(x).removeClass('feedback-widget--state-succes');
+      } else if (type === "success") {
+        $(x).addClass('feedback-widget--state-succes');
+        $(x).removeClass('feedback-widget--state-danger');
+      }
+
+      var msg = {
+        message: message,
+        type: type
+      };
+      this.log(msg);
+    }
+  }, {
+    key: "hide",
+    value: function hide() {
+      var x = document.getElementById(this._elementId);
+      $(x).fadeOut("slow");
+    }
+  }, {
+    key: "log",
+    value: function log(message) {
+      {
+        //Get local storage item by key
+        var arr = JSON.parse(localStorage.getItem('feedback_widget')); //Set initial local storage
+
+        if (arr == null) {
+          localStorage.setItem('feedback_widget', JSON.stringify([message]));
+        } else {
+          //Push new log into array
+          arr.push(message); //Remove first entry
+
+          if (arr.length > 10) {
+            arr.shift();
+          } //Remove array
+
+
+          this.removelog(); //Add full array
+
+          localStorage.setItem('feedback_widget', JSON.stringify(arr));
+        }
+      }
+    }
+  }, {
+    key: "removelog",
+    value: function removelog() {
+      localStorage.removeItem('feedback_widget');
+    }
+  }, {
+    key: "history",
+    value: function history() {
+      var _JSON$parse;
+
+      var arr = (_JSON$parse = JSON.parse(localStorage.getItem("feedback_widget"))) !== null && _JSON$parse !== void 0 ? _JSON$parse : [];
+      var messages = arr.map(function (v) {
+        return "".concat(v.type, " - ").concat(v.message);
+      }).join("\n");
+      console.log(messages);
+    }
+  }]);
+
+  return FeedbackWidget;
+}();
+
+Game.API = function () {
+  function init() {
+    console.log('from game.api.init!');
+  }
+
+  return {
+    init: init
+  };
+}();
+
+Game.Data = function () {
+  var stateMap = {
+    environment: 'development' // environment: 'production'
+
+  };
+  var configMap = {
+    url: "",
+    apiKey: "<plaats hier je apikey>",
+    mock: [{
+      url: "/api/spel/beurt",
+      data: 0
+    }]
+  };
+  1;
+
+  var privateInit = function privateInit(url, environment) {
+    configMap.url = url;
+
+    if (environment !== 'production' && environment !== 'development') {
+      throw new Error('environment must be production or development');
+    }
+
+    stateMap.environment = environment;
+    console.log(stateMap.environment + ' environment');
+    console.log('from game.data.init!');
+  };
+
+  var get = function get(url) {
+    if (stateMap.environment === 'development') {
+      return getMockData(url);
+    } else if (stateMap.environment === 'production') {
+      // console.log("fetching: " + configMap.url + url);
+      return $.get(configMap.url + url).then(function (response) {
+        console.log(response);
+        return response;
+      })["catch"](function (error) {
+        console.log(error.message);
+      });
+    }
+  };
+
+  var put = function put(url) {
+    if (stateMap.environment === "development") return getMockData(url); // console.log("DoeZet Url;" + configMap.url + url);
+
+    return new Promise(function (resolve) {
+      $.ajax({
+        url: configMap.url + url,
+        type: 'PUT',
+        success: function success(r) {
+          resolve(r);
+        }
+      });
+    });
+  };
+
+  var getMockData = function getMockData(url) {
+    var mockData = configMap.mock.find(function (item) {
+      return item.url === url;
+    }).data;
+    return new Promise(function (resolve, reject) {
+      resolve(mockData);
+    });
+  };
+
+  return {
+    init: privateInit,
+    get: get,
+    put: put
+  };
+}();
+
+Game.Model = function () {
+  var configMap = {};
+
+  var _getGameState = function _getGameState(token) {
+    return new Promise(function (resolve, reject) {
+      console.log("getting game for: speltoken: ".concat(token));
+      Game.Data.get("/Spel/GetSpel/".concat(token !== null && token !== void 0 ? token : "")).then(function (res) {
+        var aanDeBeurt = res.aanDeBeurt;
+        console.log(res);
+        convertBoard(res);
+
+        if (aanDeBeurt === 0 || aanDeBeurt === 1 || aanDeBeurt === 2) {
+          resolve(res);
+        } else {
+          console.error("Game.Model.getGameState: Error fetching gamestate");
+          reject("Invalid gamestate or failed request.");
+        }
+      })["catch"](function (err) {
+        return reject(err);
+      });
+    });
+  };
+
+  var _getAfgelopen = function _getAfgelopen(token) {
+    return new Promise(function (resolve, reject) {
+      Game.Data.get("/Spel/Afgelopen/".concat(token !== null && token !== void 0 ? token : "")).then(function (res) {
+        resolve(res);
+      })["catch"](function (err) {
+        return reject(err);
+      });
+    });
+  };
+
+  function convertBoard(gameState) {
+    var board = gameState.bord;
+    var newBoard = [];
+
+    for (var i = 0; i < 8; i++) {
+      newBoard.push([0, 0, 0, 0, 0, 0, 0, 0]);
+    }
+
+    for (var pos in board) {
+      var color = board[pos];
+      var split = pos.split(",");
+      newBoard[split[0]][split[1]] = color;
+    }
+
+    gameState.bord = newBoard;
+  }
+
+  function _init() {
+    console.log('from game.model.init!');
+  }
+
+  return {
+    init: _init,
+    getGameState: _getGameState,
+    getAfgelopen: _getAfgelopen
+  };
+}();
+
+Game.Reversi = function () {
+  var configMap = {
+    boardTemplate: "board.body"
+  };
+
+  function _init() {
+    console.log('from game.reversi.init!');
+  }
+
+  function renderBoard(newBoard) {
+    var board = document.querySelector(".board");
+    board.innerHTML = Game.Template.parseTemplate(configMap.boardTemplate, {
+      board: newBoard
+    });
+
+    var _loop = function _loop(y) {
+      var _loop2 = function _loop2(x) {
+        var place = document.querySelector(".board__row__element--y-".concat(y, ".board__row__element--x-").concat(x));
+        place.addEventListener("click", function (evt) {
+          if (place.children.length > 0) return;
+          Game.placeFiche(x, y);
+        });
+      };
+
+      for (var x = 0; x < 8; x++) {
+        _loop2(x);
+      }
+    };
+
+    for (var y = 0; y < 8; y++) {
+      _loop(y);
+    }
+  }
+
+  function showFiche(x, y, player) {
+    var place = document.querySelector(".board__row__element--y-".concat(y, ".board__row__element--x-").concat(x));
+    var fiche = document.createElement("div");
+    fiche.classList.add("fiche");
+    fiche.classList.add("fiche--".concat(player));
+    place.innerHTML = "";
+    place.append(fiche);
+  }
+
+  return {
+    init: _init,
+    renderBoard: renderBoard,
+    showFiche: showFiche
+  };
+}();
+
+Game.Stats = function () {
+  var myChart;
+  var p1Fiches = [];
+  var p2Fiches = [];
+
+  function _init() {
+    console.log('from game.stats.init!');
+    update();
+  }
+
+  function update() {
+    var _myChart;
+
+    var ctx = $('#stats');
+    (_myChart = myChart) === null || _myChart === void 0 ? void 0 : _myChart.destroy();
+    myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: p1Fiches.map(function (value, index) {
+          return index + 1;
+        }),
+        datasets: [{
+          label: 'Speler 1',
+          data: p1Fiches,
+          fill: false,
+          borderColor: 'rgb(179, 91, 91)',
+          tension: 0.1
+        }, {
+          label: 'Speler 2',
+          data: p2Fiches,
+          fill: false,
+          borderColor: 'rgb(91, 179, 94)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  function addData(data) {
+    var p1 = data.bord.map(function (v) {
+      return v.filter(function (l) {
+        return l === 1;
+      }).length;
+    }).reduce(function (i1, i2) {
+      return i1 + i2;
+    });
+    var p2 = data.bord.map(function (v) {
+      return v.filter(function (l) {
+        return l === 2;
+      }).length;
+    }).reduce(function (i1, i2) {
+      return i1 + i2;
+    });
+    p1Fiches.push(p1);
+    p2Fiches.push(p2);
+    update();
+  }
+
+  return {
+    init: _init,
+    addData: addData
+  };
+}();
+
+Game.Template = function () {
+  var configMap = {};
+
+  function getTemplate(templateName) {
+    // console.log('----');
+    // console.log(spa_templates);
+    // console.log('----');
+    var templates = spa_templates.templates;
+
+    var _iterator = _createForOfIteratorHelper(templateName.split(".")),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var t = _step.value;
+        templates = templates[t];
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    return templates;
+  }
+
+  function parseTemplate(templateName, data) {
+    return getTemplate(templateName)(data);
+  }
+
+  function _init() {
+    Handlebars.registerHelper('ifeq', function (a, b, options) {
+      if (a === b) {
+        return options.fn(this);
+      }
+
+      return options.inverse(this);
+    });
+    Handlebars.registerHelper('ifnoteq', function (a, b, options) {
+      if (a !== b) {
+        return options.fn(this);
+      }
+
+      return options.inverse(this);
+    });
+  }
+
+  return {
+    init: _init,
+    getTemplate: getTemplate,
+    parseTemplate: parseTemplate
+  };
+}();
