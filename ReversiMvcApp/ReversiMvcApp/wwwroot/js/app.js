@@ -329,9 +329,11 @@ Game.Data = function () {
           url: configMap.url + url,
           type: 'GET',
           success: function success(r) {
+            console.log('response: ' + r);
             resolve(r);
           },
           error: function error(err) {
+            console.log(err);
             reject(err);
           }
         });
