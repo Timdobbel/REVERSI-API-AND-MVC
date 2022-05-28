@@ -12,7 +12,6 @@ using ReversiMvcApp.Models;
 
 namespace ReversiMvcApp
 {
-    [Authorize]
     public class SpelController : Controller
     {
         private readonly APIService _service;
@@ -25,18 +24,21 @@ namespace ReversiMvcApp
         }
 
         // GET: Spel
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             return View(_service.GetAll());
         }
 
         // GET: Leaderboard
+        [Authorize]
         public async Task<IActionResult> Leaderboard()
         {
             return View(await _context.Spelers.ToListAsync());
         }
 
         // GET: Spel/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -45,6 +47,7 @@ namespace ReversiMvcApp
         // POST: Spel/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("ID,Omschrijving,Token,aanDeBeurt,Speler1Token,Speler2Token")] Spel spel)
         {
             Spel resObject = null;
@@ -89,6 +92,7 @@ namespace ReversiMvcApp
             return NotFound();
         }
 
+        [Authorize]
         public IActionResult Speel(string id)
         {
             if (id == null) return NotFound();
