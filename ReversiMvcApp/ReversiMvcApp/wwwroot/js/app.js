@@ -315,12 +315,26 @@ Game.Data = function () {
     if (stateMap.environment === 'development') {
       return getMockData(url);
     } else if (stateMap.environment === 'production') {
-      console.log("fetching: " + configMap.url + url);
-      return $.get(configMap.url + url).then(function (response) {
-        console.log(response);
-        return response;
-      })["catch"](function (error) {
-        console.log(error.message);
+      console.log("fetching: " + configMap.url + url); // return $.get(configMap.url + url)
+      //     .then(response => {
+      //         console.log(response);
+      //         return response;
+      //     })
+      //     .catch(error => {
+      //         console.log(error.message);
+      //     });
+
+      return new Promise(function (resolve, reject) {
+        $.ajax({
+          url: configMap.url + url,
+          type: 'GET',
+          success: function success(r) {
+            resolve(r);
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
       });
     }
   };
