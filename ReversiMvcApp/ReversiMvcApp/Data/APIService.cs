@@ -14,7 +14,7 @@ namespace ReversiMvcApp.Data
         public APIService()
         {
             httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("https://localhost:44333/");
+            httpClient.BaseAddress = new Uri("http://localhost:5003/");
         }
 
         public Spel DoeZet(string token, string spelertoken, int kolom, int rij)
