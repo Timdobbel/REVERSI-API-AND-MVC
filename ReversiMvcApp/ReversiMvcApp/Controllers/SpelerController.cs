@@ -34,8 +34,6 @@ namespace ReversiMvcApp
         // GET: Speler
         public async Task<IActionResult> Index()
         {
-
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
             var role = await _userManager.GetRolesAsync(user);
@@ -46,44 +44,6 @@ namespace ReversiMvcApp
             }
             return View("IndexMediator", await _context.Spelers.ToListAsync());
 
-        }
-
-        // GET: Speler/Details/5
-        public async Task<IActionResult> Details(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var speler = await _context.Spelers
-                .FirstOrDefaultAsync(m => m.Guid == id);
-            if (speler == null)
-            {
-                return NotFound();
-            }
-
-            return View(speler);
-        }
-
-        // GET: Speler/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Speler/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Guid,Naam,AantalGewonnen,AantalVerloren,AantalGelijk")] Speler speler)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(speler);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(speler);
         }
 
         // GET: Speler/Edit/5
@@ -145,7 +105,6 @@ namespace ReversiMvcApp
         }
 
         //GET: Speler/Delete/5
-        [Authorize(Roles = "Beheerder")]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)

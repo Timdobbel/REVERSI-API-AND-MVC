@@ -17,6 +17,37 @@ namespace ReversiMvcApp.Data
             httpClient.BaseAddress = new Uri("https://localhost:44333/");
         }
 
+        public Spel DoeZet(string token, string spelertoken, int kolom, int rij)
+        {
+            Spel resObject = null;
+
+            HttpResponseMessage res = httpClient.PutAsync(
+                $"/api/spel/{token}/zet?token={spelertoken}&rij={rij}&kolom={kolom}", new StringContent("")
+            ).Result;
+            if (res.IsSuccessStatusCode)
+            {
+                resObject = res.Content.ReadAsAsync<Spel>().Result;
+            }
+
+            return resObject;
+
+        }
+
+        public bool CheckIfAfgelopen(string speltoken)
+        {
+            bool resObjecten = new();
+
+            var res = httpClient.GetAsync($"/api/Afgelopen/{speltoken}").Result;
+
+            if (res.IsSuccessStatusCode)
+            {
+                resObjecten = res.Content.ReadAsAsync<bool>().Result;
+            }
+
+            return resObjecten;
+        }
+
+
         public List<Spel> GetSpelOmschrijvingenVanSpellenMetWachtendeSpeler()
         {
             List<Spel> resObjecten = new();

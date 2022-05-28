@@ -76,6 +76,7 @@ namespace ReversiMvcApp
 
 
         // GET: Spel/Delete/5
+        [Authorize(Roles = "Beheerder")]
         public async Task<IActionResult> Delete(string id)
         {
             ClaimsPrincipal currentUser = this.User;
@@ -99,6 +100,28 @@ namespace ReversiMvcApp
             return View(spel);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetSpel(string id)
+        {
+            if (id == null) return NotFound();
+            return Ok(_service.GetSpel(id));
+        }
+
+
+        [HttpPut("/api/spel/{id}/zet")]
+        public async Task<IActionResult> DoeZet(string id, [FromQuery] string token, [FromQuery] int rij, [FromQuery] int kolom)
+        {
+            var spel = _service.DoeZet(id, token, kolom, rij);
+
+            return Ok(spel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Afgelopen(string id)
+        {
+            bool res = _service.CheckIfAfgelopen(id);
+            return Ok(res);
+        }
 
 
         [HttpGet]
