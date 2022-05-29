@@ -31,11 +31,9 @@ namespace ReversiMvcApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddReCaptcha(Configuration.GetSection("ReCaptcha"));
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddDbContext<ReversiDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ReversiDB")), ServiceLifetime.Singleton);
+            services.AddDbContext<ReversiDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ReversiDB")), ServiceLifetime.Transient);
 
             services.AddCors(
                 options =>
