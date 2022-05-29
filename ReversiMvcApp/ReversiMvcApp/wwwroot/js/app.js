@@ -49,7 +49,6 @@ var Game = function (url) {
   };
 
   var placeFiche = function placeFiche(x, y) {
-    // console.log(`Placee fiche at x:${x}, y:${y}`);
     var e = document.getElementById('beurt');
     e.innerText = 'Laden...'; // console.log('aan de beurt: ' + aanDeBeurt());
 
@@ -141,7 +140,6 @@ var Game = function (url) {
     var first = stateMap.gameState === null;
     Game.Model.getGameState(stateMap.gameId).then(function (response) {
       Game.Model.getAfgelopen(stateMap.gameId).then(function (afgelopen) {
-        // console.log('afgelopen: ' + afgelopen);
         if (afgelopen) {
           updateWonOrLost();
           clearInterval(polling);
@@ -315,25 +313,15 @@ Game.Data = function () {
     if (stateMap.environment === 'development') {
       return getMockData(url);
     } else if (stateMap.environment === 'production') {
-      console.log("fetching: " + configMap.url + url); // return $.get(configMap.url + url)
-      //     .then(response => {
-      //         console.log(response);
-      //         return response;
-      //     })
-      //     .catch(error => {
-      //         console.log(error.message);
-      //     });
-
+      // console.log("fetching: " + configMap.url + url);
       return new Promise(function (resolve, reject) {
         $.ajax({
           url: configMap.url + url,
           type: 'GET',
           success: function success(r) {
-            console.log('response: ' + r);
             resolve(r);
           },
           error: function error(err) {
-            console.log(err);
             reject(err);
           }
         });
@@ -376,10 +364,9 @@ Game.Model = function () {
 
   var _getGameState = function _getGameState(token) {
     return new Promise(function (resolve, reject) {
-      console.log("getting game for: speltoken: ".concat(token));
+      // console.log(`getting game for: speltoken: ${token}`);
       Game.Data.get("/Spel/GetSpel/".concat(token !== null && token !== void 0 ? token : "")).then(function (res) {
         var aanDeBeurt = res.aanDeBeurt;
-        console.log(res);
         convertBoard(res);
 
         if (aanDeBeurt === 0 || aanDeBeurt === 1 || aanDeBeurt === 2) {
@@ -557,9 +544,6 @@ Game.Template = function () {
   var configMap = {};
 
   function getTemplate(templateName) {
-    // console.log('----');
-    // console.log(spa_templates);
-    // console.log('----');
     var templates = spa_templates.templates;
 
     var _iterator = _createForOfIteratorHelper(templateName.split(".")),
