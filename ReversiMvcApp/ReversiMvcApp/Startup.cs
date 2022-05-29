@@ -55,7 +55,7 @@ namespace ReversiMvcApp
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddSingleton(new APIService());
+            services.AddTransient<APIService>();
             services.AddControllersWithViews();
         }
 

@@ -14,6 +14,8 @@ namespace ReversiMvcApp.Models
         public int aanDeBeurt { get; set; }
         public string Speler1Token { get; set; }
         public string Speler2Token { get; set; }
+        public bool SpelerVerlaten { get; set; }
+
 
         [NotMapped]
         public Dictionary<string, int> bord { get; set; }

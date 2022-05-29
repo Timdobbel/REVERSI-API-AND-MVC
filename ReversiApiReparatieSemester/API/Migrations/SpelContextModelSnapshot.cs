@@ -40,6 +40,9 @@ namespace API.Migrations
                     b.Property<string>("Speler2Token")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("SpelerVerlaten")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Token")
                         .HasColumnType("nvarchar(max)");
 
