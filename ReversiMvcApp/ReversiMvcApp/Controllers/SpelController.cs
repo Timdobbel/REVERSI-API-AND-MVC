@@ -138,8 +138,8 @@ namespace ReversiMvcApp
             if (spel == null) return NotFound();
 
 
-            ClaimsPrincipal currentUser = this.User;
-            var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            //ClaimsPrincipal currentUser = this.User;
+            //var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             Speler speler1 = _context.Spelers.FirstOrDefault(s => s.Guid == spel.Speler1Token);
             if (speler1 == null) return NotFound();
@@ -147,7 +147,7 @@ namespace ReversiMvcApp
             Speler speler2 = _context.Spelers.FirstOrDefault(s => s.Guid == spel.Speler2Token);
             if (speler2 == null) return NotFound();
 
-            if (currentUserId != spel.Speler1Token || currentUserId != spel.Speler2Token) return Unauthorized();
+            //if (currentUserId != spel.Speler1Token || currentUserId != spel.Speler2Token) return Unauthorized();
 
             int scoreP1 = spel.bord.Count(v => v.Value == 1);
             int scoreP2 = spel.bord.Count(v => v.Value == 2);
@@ -170,7 +170,8 @@ namespace ReversiMvcApp
 
             await _context.SaveChangesAsync();
 
-            if (!_service.Delete(id, currentUserId)) return BadRequest();
+            if (!_service.Delete(id, spel.Speler1Token)) return BadRequest();
+            //if (!_service.Delete(id, currentUserId)) return BadRequest();
 
             return Ok();
         }
