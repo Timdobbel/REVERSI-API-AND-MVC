@@ -46,6 +46,8 @@ namespace API.Controllers
         public ActionResult<bool> Afgelopen(string id)
         {
             Spel spel = iRepository.GetSpel(id);
+            //Asume that game is finished if null
+            if (spel == null) return Ok(true);
 
             //If Geen kleur return false
             if (spel.AandeBeurt == Kleur.Geen) return Ok(false);

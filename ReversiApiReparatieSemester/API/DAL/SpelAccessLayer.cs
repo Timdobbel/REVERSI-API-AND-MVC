@@ -25,7 +25,7 @@ namespace API.DAL
 
         public Spel GetSpel(string spelToken)
         {
-            return _context.Spellen.First(spel => spel.Token == spelToken);
+            return _context.Spellen.FirstOrDefault(spel => spel.Token == spelToken);
         }
 
         public void Delete(Spel spel)
