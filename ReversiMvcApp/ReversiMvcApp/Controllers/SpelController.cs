@@ -147,7 +147,7 @@ namespace ReversiMvcApp
             Speler speler2 = _context.Spelers.FirstOrDefault(s => s.Guid == spel.Speler2Token);
             if (speler2 == null) return NotFound();
 
-            if (currentUserId != spel.beurt) return Unauthorized();
+            if (currentUserId != spel.Speler1Token || currentUserId != spel.Speler2Token) return Unauthorized();
 
             int scoreP1 = spel.bord.Count(v => v.Value == 1);
             int scoreP2 = spel.bord.Count(v => v.Value == 2);
